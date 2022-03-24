@@ -1,0 +1,20 @@
+# Useful if you fail to properly configure nvidia drivers to work correctly,
+# resulting in black screen on boot. This can also be used on Ubuntu 20.04
+
+
+#copy driver_scripts folder to home directory
+#open terminal
+
+cd ~/driver_scripts
+chmod +x load_nvidia.sh
+chmod +x load_intel.sh
+sudo cp *.sh /usr/local/bin
+sudo cp *.service /etc/systemd/system
+
+systemctl daemon-reload
+
+systemct enable load_nvidia.service
+systemct enable load_intel.service
+reboot
+
+

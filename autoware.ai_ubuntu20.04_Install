@@ -1,0 +1,82 @@
+1. Install docker
+
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+sudo apt-key fingerprint 0EBFCD88
+
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+sudo apt update
+
+sudo apt-get install docker-ce
+
+# test docker installation:
+sudo docker run hello-world
+
+# To enable docker to run as user and not only as sudo:
+
+sudo groupadd docker
+
+sudo usermod -aG docker $USER
+
+# logout and login again to activate group. Type 
+
+newgrp docker
+
+# verify can now run docker not as sudo:
+
+docker run hello-world
+
+2. install nvidia-container-toolkit
+
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
+   && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - \
+   && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+sudo apt update
+
+sudo apt-get install -y nvidia-docker2 
+
+sudo systemctl restart docker
+
+# check if gpu support is activated in docker:
+sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+
+
+
+
+3. run autoware 1.14.0 docker container
+
+cd ~/
+
+mkdir autoware && cd autoware
+
+git clone https://gitlab.com/autowarefoundation/autoware.ai/docker.git
+
+cd docker/generic
+
+./run.sh -t 1.14.0
+
+4. Automate run process (optional)
+
+echo "alias launch_autoware="cd /home/<User>/autoware_docker/docker/generic && ./run.sh -t 1.14.0" >> ~/.bashrc
+
+# Note: replace <User> with user name on pc
+
+# now to run autoware docker image, just type
+launch_autoware
+# to close docker image, type
+exit
+
+####################################
+Additional information
+####################################
+#Docker image resets everytime you close it. In order to share files between docker image and host computer, put the files in shared_dir folder. 
+#To access this file from host computer terminal, type
+cd ~/shared_dir
+
+#To access this file from docker image, type
+cd shared_dir 
+

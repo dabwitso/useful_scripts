@@ -1,0 +1,14 @@
+[Unit]
+Description=Load Nvidia
+After=sysinit.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=no
+User=root
+ExecStart=/usr/local/bin/load_nvidia.sh
+ExecStop=/bin/echo finished loading nvidia
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,16 @@
+UBUNTU 20.04
+
+
+sudo add-apt-repository ppa:graphics-drivers/ppa
+sudo apt update
+sudo apt install nvidia-driver-450
+sudo gedit /etc/default/grub
+# change GRUB_CMDLINE_LINUX_DEFAULT="quiet splash" to GRUB_CMDLINE_LINUX_DEFAULT="splash"
+sudo update-grub
+sudo apt install lightdm -y
+reboot
+
+# check if working after reboot
+
+nvidia-smi
+nvidia-settings

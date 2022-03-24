@@ -1,0 +1,77 @@
+sudo apt update
+sudo apt install apache2 openssl gedit
+sudo a2enmod ssl
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+
+# firewall setup for apache2 to allow traffic on port 443 (https)
+sudo ufw allow 'Apache Secure'
+
+# setup apache2 to support https
+# open apache2 config file
+sudo gedit /etc/apache2/apache2/conf
+# add following at end of file
+
+<Directory /var/www/html>
+AllowOverride All
+</Directory>
+
+# close file
+
+# create private key and website certificate using OpenSSL command
+mkdir /etc/apache2/certificate
+cd /etc/apache2/certificate
+
+
+# set FQDN name, for example to tagnova-1
+# use FQDN when setting up apache2 openssl certificate in next step
+sudo hostname -b tagnova-1
+
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out apache-certificate.crt -keyout apache.key
+
+# fill in the details as follows. Note to give Unit Name = Tagnova ID and common name: FQDN you wrote on paper:
+#Generating a RSA private key
+#............++++
+#.......................................................++++
+#writing new private key to 'apache.key'
+#-----
+#You are about to be asked to enter information that will be incorporated
+#into your certificate request.
+#What you are about to enter is what is called a Distinguished Name or a DN.
+#There are quite a few fields but you can leave some blank
+#For some fields there will be a default value,
+#If you enter '.', the field will be left blank.
+#-----
+#Country Name (2 letter code) [AU]:JP
+#State or Province Name (full name) [Some-State]:Aichi
+#Locality Name (eg, city) []: Toyota
+#Organization Name (eg, company) [Internet Widgits Pty Ltd]:Toyota Motor Corporation
+#Organizational Unit Name (eg, section) []: Tagnova1 
+#Common Name (e.g. server FQDN or YOUR name) []: (write FQDN you wrote on paper here)
+#Email Address []:
+
+
+# next change website configuration to enable https
+sudo /etc/apache2/sites-enabled/000-default.conf
+# replace all contents with the following
+<VirtualHost *:443>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/html
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+        SSLEngine on
+        SSLCertificateFile /etc/apache2/certificate/apache-certificate.crt
+        SSLCertificateKeyFile /etc/apache2/certificate/apache.key
+</VirtualHost>
+
+
+
+# If you want to access apache2 servers from the internet, you will need to enable port forwarding on you router for port 443. In our case, our server and tagnova will be on the same network, so port forwarding wont be needed.
+
+
+
+# setup https resource access authorization when accessing over internet
+sudo apt-get install apache2-utils -y
+
+# generate password file for admin user
+sudo htpasswd -c /etc/apache2/.htpasswd admin

@@ -1,1 +1,1 @@
-# Useful scripts and setup notes for Ubuntu
+# Useful scripts and setup notes for Ubuntu and general utility

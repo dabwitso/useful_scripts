@@ -1,0 +1,49 @@
+1. Install ros melodic using site
+
+2. install nvidia drivers recommended by ubuntu (installed 390)
+
+3. reboot
+   
+   copy cuda_10.0.130_410.48_linux.run and eigen-3.3.7.tar.gz to Home directory
+
+4. Install cuda 10 using runfile
+   
+   sudo ./cuda_10.0.130_410.48_linux.run -silent -driver
+
+5. Install eigen library
+   
+   mkdir eigen && tar --strip-components=1 -xzvf eigen-3.3.7.tar.gz -C eigen
+   
+   cd eigen && mkdir build && cd build && cmake .. && make
+   
+   sudo make install
+   
+   cd && rm -rf eigen && reboot
+
+6. Build autoware 1.14
+   
+   sudo apt update
+   
+   sudo apt install -y python-catkin-pkg python-rosdep ros-$ROS_DISTRO-catkin
+   
+   sudo apt install -y python3-pip python3-colcon-common-extensions python3-setuptools python3-vcstool
+   
+   pip3 install -U setuptools
+   
+   mkdir -p autoware.ai/src
+   
+   cd autoware.ai
+   
+   wget -O autoware.ai.repos "https://gitlab.com/autowarefoundation/autoware.ai/autoware/raw/1.14.0/autoware.ai.repos?inline=false"
+   
+   wget -O autoware.ai.repos "https://gitlab.com/autowarefoundation/autoware.ai/autoware/raw/master/autoware.ai.repos?inline=false"
+   
+   vcs import src < autoware.ai.repos
+   
+   rosdep update
+   
+   rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
+   
+   AUTOWARE_COMPILE_WITH_CUDA=1 colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+
